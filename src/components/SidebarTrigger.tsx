@@ -14,7 +14,7 @@ export default function SidebarTrigger() {
       <img
         src="/siderbar.svg"
         alt="Toggle Sidebar"
-        className={`h-5 w-5 transition-transform duration-300 ${
+        className={`h-5 w-5 transition-transform duration-100 ${
           isSidebarOpen  ? 'rotate-0' : 'rotate-180'
         }`}
       />

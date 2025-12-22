@@ -292,7 +292,7 @@ export default function Page() {
     const headers = visibleCols.map(([, col]) => col.label);
     const data = filteredRows.map((r) =>
       visibleCols.map(([key]) => {
-        if (key === "image") return r.produk?.file ? "Gambar" : "-";
+        if (key === "image") return r.produk?.file || "-";
         if (key === "name") return r.name;
         if (key === "code") return r.code;
         if (key === "category") return r.produkKategori?.name || "-";
@@ -449,13 +449,7 @@ export default function Page() {
         >
           <span className="text-base leading-none">+</span> Tambah
         </button>
-        {/* <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          className="hidden"
-          accept=".xlsx, .xls"
-        /> */}
+
         <button
           onClick={() => {}}
           className="inline-flex items-center gap-2 rounded-lg bg-jax-lime px-3 py-2 text-sm font-medium text-white hover:bg-jax-limeDark transition"

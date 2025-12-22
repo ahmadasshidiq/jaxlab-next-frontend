@@ -170,16 +170,16 @@ export default function Page() {
   };
 
   const handleExport = () => {
-    const visibleCols = Object.entries(columns).filter(([, col]) => col.visible);
-    const headers = visibleCols.map(([, col]) => col.label);
-    const data = filteredRows.map((r) =>
-      visibleCols.map(([key]) => {
+      const visibleCols = Object.entries(columns).filter(([, col]) => col.visible);
+      const headers = visibleCols.map(([, col]) => col.label);
+      const data = filteredRows.map((r) =>
+        visibleCols.map(([key]) => {
         if (key === "name") return r.name;
         if (key === "code") return r.code;
-        return "";
-      })
-    );
-    exportToExcel("merk-produk", headers, data);
+          return "";
+        })
+      );
+      exportToExcel("merk-produk", headers, data);
   };
 
   const fetchData = async () => {
@@ -344,7 +344,7 @@ export default function Page() {
           Import
         </button>
         <button
-          onClick={() => {}}
+          onClick={handleExport}
           className="inline-flex items-center gap-2 rounded-lg bg-jax-lime px-3 py-2 text-sm font-medium text-white hover:bg-jax-limeDark transition"
         >
           <svg

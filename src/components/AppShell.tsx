@@ -22,26 +22,10 @@ export function useSidebar() {
 const STORAGE_KEY = "sidebar_open";
 
 export default function AppShell({ children }: { children: ReactNode }) {
-  // ✅ default icon-only
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
 
-  // ✅ load dari localStorage (biar gak reset saat pindah page / refresh)
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved !== null) setIsSidebarOpen(saved === "true");
-    } catch {
-      // ignore
-    }
-  }, []);
-
-  // ✅ simpan setiap state berubah
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, String(isSidebarOpen));
-    } catch {
-      // ignore
-    }
+    localStorage.setItem(STORAGE_KEY, String(isSidebarOpen));
   }, [isSidebarOpen]);
 
   const toggleSidebar = () => setIsSidebarOpen((v) => !v);
