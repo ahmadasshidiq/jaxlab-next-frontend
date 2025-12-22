@@ -24,12 +24,8 @@ function cn(...parts: Array<string | false | null | undefined>) {
   return parts.filter(Boolean).join(" ");
 }
 
-function LineIcon() {
-  return <span className="inline-block h-5 w-[2px] rounded bg-black" />;
-}
-
 export default function Sidebar() {
-  const { isSidebarOpen: open } = useSidebar();
+  const { isSidebarOpen: open, toggleSidebar } = useSidebar();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -119,10 +115,7 @@ export default function Sidebar() {
           router.replace("/login");
         },
       },
-      cancel: {
-        label: "Batal",
-        onClick: () => {}
-      },
+      cancel: { label: "Batal", onClick: () => {} },
     });
   };
 
@@ -131,36 +124,34 @@ export default function Sidebar() {
   return (
     <aside
       className={cn(
-        "fixed left-0 top-0 z-40 flex h-screen flex-col border-r border-jax-line bg-white transition-all duration-400",
+        "fixed left-0 top-0 z-40 flex h-screen flex-col border-r border-jax-line bg-white transition-all duration-300",
         open ? "w-72" : "w-20"
       )}
     >
-      <div
-        className={cn(
-          "flex items-center justify-between py-6",
-          open ? "px-6" : "px-3"
-        )}
-      >
-        <div
+      {/* Header (klik logo untuk toggle) */}
+      <div className={cn("py-6", open ? "px-6" : "px-3")}>
+        <button
+          type="button"
+          onClick={toggleSidebar}
           className={cn(
-            "flex items-center",
-            open ? "gap-2" : "justify-center w-full"
+            "flex w-full items-center rounded-xl hover:bg-gray-50 transition",
+            open ? "justify-start gap-2 px-2 py-2" : "justify-center px-2 py-2"
           )}
+          aria-label="Toggle Sidebar"
         >
           <img
             src={open ? "/jaxlab.png" : "/jaxer.png"}
             alt={open ? "JaxLab" : "Jaxer"}
             className={cn(
-              open
-                ? "h-10 w-auto"
-                : "h-12 w-12 rounded-lg bg-white p-1 object-contain"
+              open ? "h-10 w-auto" : "h-12 w-12 rounded-lg p-1 object-contain"
             )}
           />
-        </div>
+        </button>
       </div>
 
       {open && <div className="px-6 pb-2 text-xs text-gray-400">Highlight</div>}
 
+      {/* Nav */}
       <nav className={cn("flex-1", open ? "px-4" : "px-2")}>
         <div className="space-y-1">
           {navItems.map((item) => {
@@ -174,8 +165,9 @@ export default function Sidebar() {
                   <button
                     type="button"
                     onClick={() => {
+                      // mode kecil: langsung ke halaman utama manage
                       if (!open) {
-                        router.push('/manage/product');
+                        router.push("/manage/product");
                         return;
                       }
                       setIsKelolaBarangOpen((v) => !v);
@@ -188,15 +180,11 @@ export default function Sidebar() {
                         : "text-gray-700 hover:bg-gray-50"
                     )}
                   >
-                    <span
-                      className={cn("flex items-center", open ? "gap-3" : "")}
-                    >
+                    <span className={cn("flex items-center", open ? "gap-3" : "")}>
                       <span
                         className={cn(
                           "transition",
-                          anyChildActive
-                            ? "brightness-0 invert"
-                            : "brightness-0"
+                          anyChildActive ? "brightness-0 invert" : "brightness-0"
                         )}
                       >
                         {item.icon}
@@ -238,7 +226,6 @@ export default function Sidebar() {
                   {isKelolaBarangOpen && open && (
                     <div className="relative mt-2 ml-6">
                       <span className="absolute left-0 top-0 h-full w-[1px] bg-gray-300" />
-
                       <div className="space-y-1 pl-4">
                         {item.children.map((c) => {
                           const active = pathname === c.href;
@@ -310,10 +297,14 @@ export default function Sidebar() {
         </div>
       </nav>
 
+      {/* Logout */}
       <div className="px-4 pb-6">
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 rounded-xl border border-red-300 px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 transition"
+          className={cn(
+            "w-full flex items-center rounded-xl border border-red-300 py-3 text-sm font-medium text-red-600 hover:bg-red-50 transition",
+            open ? "gap-3 px-4" : "justify-center px-0"
+          )}
         >
           <svg
             className="h-5 w-5"

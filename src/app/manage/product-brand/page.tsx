@@ -324,13 +324,6 @@ export default function Page() {
         >
           <span className="text-base leading-none">+</span> Tambah
         </button>
-        {/* <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          className="hidden"
-          accept=".xlsx, .xls"
-        /> */}
         <button
           onClick={handleExport}
           className="inline-flex items-center gap-2 rounded-lg bg-jax-lime px-3 py-2 text-sm font-medium text-white hover:bg-jax-limeDark transition"
