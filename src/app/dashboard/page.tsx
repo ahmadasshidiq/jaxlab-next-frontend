@@ -24,6 +24,7 @@ type ProductRow = {
   qty: number;
   sellPrice: number;
   buyPrice: number;
+  image?: string;
 };
 
 export default function DashboardPage() {
@@ -87,6 +88,7 @@ export default function DashboardPage() {
           qty: Number(r.qty) || 0,
           sellPrice: Number(r.harga) || 0,
           buyPrice: Number(r.hargaModal) || 0,
+          image: r.produk?.file || r.imageDataUrl || '',
         }));
         setProducts(mapped);
       } catch (err) {
@@ -221,7 +223,17 @@ export default function DashboardPage() {
                 products.map((p) => (
                   <tr key={p.code} className="border-b border-gray-100">
                     <td className="px-5 py-3">
-                      <div className="h-8 w-8 rounded-full bg-gray-200" />
+                      <div className="h-8 w-8 rounded-full overflow-hidden border border-gray-200">
+                        {p.image ? (
+                          <img
+                            src={p.image}
+                            alt={p.name}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <div className="h-full w-full bg-gray-200" />
+                        )}
+                      </div>
                     </td>
                     <td className="px-5 py-3 text-sm text-gray-900">{p.name}</td>
                     <td className="px-5 py-3 text-sm text-gray-700">{p.code}</td>

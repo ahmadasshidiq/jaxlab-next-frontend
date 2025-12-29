@@ -7,6 +7,7 @@ import { Branch } from "../manage/branch/page";
 import { useEffect, useMemo, useState } from "react";
 import { includesText, cn, rolePillClass, exportToExcel } from "@/utils/helper";
 import TableSkeleton from "@/components/TableSkeleton";
+import ActionMenu from "@/components/ActionMenu";
 import { toast } from "sonner";
 
 export type User = {
@@ -27,6 +28,7 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
   const [openColumns, setOpenColumns] = useState(false);
   const [openActionId, setOpenActionId] = useState<string | null>(null);
+  const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
   const [columns, setColumns] = useState<Record<string, any>>({
     name: { label: "Nama", visible: true },
     email: { label: "Email", visible: true },
@@ -48,25 +50,17 @@ export default function Page() {
 
   const actionRows = (id: string) => {
     return (
-      <div className="absolute right-0 z-20 mt-2 w-52 rounded-xl border border-gray-200 bg-white p-1 shadow-lg">
-        <button
-          type="button"
-          onClick={() => router.push(`/user/${id}/edit`)}
-          className={cn(
-            "w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-50"
-          )}
-        >
-          Edit
-        </button>
-        <div className="my-1 h-px bg-gray-100" />
-        <button
-          type="button"
-          onClick={() => handleDelete(id)}
-          className="w-full rounded-lg px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
-        >
-          Hapus
-        </button>
-      </div>
+      <ActionMenu
+        anchorEl={menuAnchor}
+        onClose={() => {
+          setOpenActionId(null);
+          setMenuAnchor(null);
+        }}
+        items={[
+          { label: "Edit", onClick: () => router.push(`/user/${id}/edit`) },
+          { label: "Hapus", destructive: true, onClick: () => handleDelete(id) },
+        ]}
+      />
     );
   };
 
@@ -172,7 +166,11 @@ export default function Page() {
           <div className="relative inline-block">
             <button
               type="button"
-              onClick={() => setOpenActionId(openActionId === r._id ? null : r._id)}
+              onClick={(e) => {
+                const next = openActionId === r._id ? null : r._id;
+                setOpenActionId(next);
+                setMenuAnchor(next ? (e.currentTarget as HTMLElement) : null);
+              }}
               className="rounded-lg px-2 py-1 text-gray-600 hover:bg-gray-100"
               aria-label="Row actions"
             >

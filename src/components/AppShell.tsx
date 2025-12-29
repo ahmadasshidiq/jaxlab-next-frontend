@@ -25,6 +25,15 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
 
   useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      setIsSidebarOpen(raw === null ? true : raw === "true");
+    } catch {
+      setIsSidebarOpen(true);
+    }
+  }, []);
+
+  useEffect(() => {
     localStorage.setItem(STORAGE_KEY, String(isSidebarOpen));
   }, [isSidebarOpen]);
 
@@ -42,7 +51,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
         <Sidebar />
 
         {/* konten ikut geser sesuai lebar sidebar */}
-        <div className={`flex-1 transition-all duration-300 ${isSidebarOpen ? "pl-72" : "pl-20"}`}>
+        <div className={`flex-1 transition-all duration-500 ease-in-out ${isSidebarOpen ? "pl-72" : "pl-20"}`}>
           <div className="px-6 py-6">{children}</div>
         </div>
       </div>

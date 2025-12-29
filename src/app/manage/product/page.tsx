@@ -3,6 +3,7 @@
 import AppShell from "@/components/AppShell";
 import SidebarTrigger from "@/components/SidebarTrigger";
 import TableSkeleton from "@/components/TableSkeleton";
+import ActionMenu from "@/components/ActionMenu";
 import { includesText, cn, exportToExcel } from "@/utils/helper";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -46,6 +47,7 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
   const [openColumns, setOpenColumns] = useState(false);
   const [openActionId, setOpenActionId] = useState<string | null>(null);
+  const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
   const [columns, setColumns] = useState<Record<string, any>>({
     image: { label: "Gambar", visible: true },
     name: { label: "Nama", visible: true },
@@ -79,25 +81,24 @@ export default function Page() {
 
   const actionRows = (id: string, idProduct: string) => {
     return (
-      <div className="absolute right-0 z-20 mt-2 w-52 rounded-xl border border-gray-200 bg-white p-1 shadow-lg">
-        <button
-          type="button"
-          onClick={() => router.push(`/manage/product/${id}/edit`)}
-          className={cn(
-            "w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-50"
-          )}
-        >
-          Edit
-        </button>
-        <div className="my-1 h-px bg-gray-100" />
-        <button
-          type="button"
-          onClick={() => handleDelete(id, idProduct)}
-          className="w-full rounded-lg px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
-        >
-          Hapus
-        </button>
-      </div>
+      <ActionMenu
+        anchorEl={menuAnchor}
+        onClose={() => {
+          setOpenActionId(null);
+          setMenuAnchor(null);
+        }}
+        items={[
+          {
+            label: "Edit",
+            onClick: () => router.push(`/manage/product/${id}/edit`),
+          },
+          {
+            label: "Hapus",
+            destructive: true,
+            onClick: () => handleDelete(id, idProduct),
+          },
+        ]}
+      />
     );
   };
 
@@ -182,19 +183,22 @@ export default function Page() {
     }
 
     return filteredRows?.map((r) => (
-      <tr key={r.code} className="border-b border-gray-100">
+      <tr key={r._id} className="border-b border-gray-100">
         {columns.image.visible && (
           <td className="px-5 py-3">
             <div className="h-16 w-16 overflow-hidden rounded-lg border border-gray-200">
-              {r.produk?.file ? (
-                <img
-                  src={r.produk.file}
-                  alt={r.name}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <div className="h-full w-full bg-gray-200" />
-              )}
+              {(() => {
+                const imageSrc = r.produk?.file || r.imageDataUrl || "";
+                return imageSrc ? (
+                  <img
+                    src={imageSrc}
+                    alt={r.name}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="h-full w-full bg-gray-200" />
+                );
+              })()}
             </div>
           </td>
         )}
@@ -236,16 +240,18 @@ export default function Page() {
           <div className="relative inline-block">
             <button
               type="button"
-              onClick={() =>
-                setOpenActionId(openActionId === r._id ? null : r._id)
-              }
+              onClick={(e) => {
+                const next = openActionId === r._id ? null : r._id;
+                setOpenActionId(next);
+                setMenuAnchor(next ? (e.currentTarget as HTMLElement) : null);
+              }}
               className="rounded-lg px-2 py-1 text-gray-600 hover:bg-gray-100"
               aria-label="Row actions"
             >
               <span className="text-lg leading-none">…</span>
             </button>
 
-            {openActionId === r._id && actionRows(r._id, r.produkId ?? '')}
+            {openActionId === r._id && actionRows(r._id, r.produkId ?? "")}
           </div>
         </td>
       </tr>
@@ -257,7 +263,7 @@ export default function Page() {
     if (!acc[cabangId]) {
       acc[cabangId] = { totalQty: 0, produkCount: new Set(), cabangName: stock.cabang?.name || "Unknown" };
     }
-    acc[cabangId].totalQty += stock.qty;
+    acc[cabangId].totalQty += Number(stock.qty || 0);
     if (stock.produkId) acc[cabangId].produkCount.add(stock.produkId);
     return acc;
   }, {});
