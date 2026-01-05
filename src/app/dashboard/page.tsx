@@ -4,6 +4,7 @@ import SidebarTrigger from '@/components/SidebarTrigger';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import ActionMenu from '@/components/ActionMenu';
 import { Stock } from '../manage/product/page';
 
 export default function DashboardPage() {
@@ -12,6 +13,8 @@ export default function DashboardPage() {
   const [dashboard, setDashboard] = useState<any>([]);
   const [isLoadingDashboard, setIsLoadingDashboard] = useState(false);
   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
+  const [openActionId, setOpenActionId] = useState<string | null>(null);
+  const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
 
   const fetchDashboard = async () => {
     setIsLoadingDashboard(true);
@@ -46,6 +49,45 @@ export default function DashboardPage() {
     } finally {
       setIsLoadingDashboard(false);
     }
+  };
+
+  const handleDelete = (id: string, idProduct: string) => {
+    toast('Yakin ingin menghapus data ini?', {
+      description: 'Data yang dihapus tidak dapat dikembalikan.',
+      duration: Infinity,
+      action: {
+        label: 'Hapus',
+        onClick: async () => {
+          try {
+            await fetch(`/api/stock/${id}?idProduct=${idProduct}`, {
+              method: 'DELETE',
+            });
+            toast.success('Data successfully deleted');
+            fetchProducts();
+          } catch (err) {
+            toast.error('Failed to delete data');
+          }
+        },
+      },
+      cancel: { label: 'Batal', onClick: () => {} },
+    });
+  };
+
+  const actionRows = (id: string, idProduct: string) => {
+    return (
+      <ActionMenu
+        anchorEl={menuAnchor}
+        onClose={() => {
+          setOpenActionId(null);
+          setMenuAnchor(null);
+        }}
+        shadowClass="shadow-sm"
+        items={[
+          { label: 'Edit', onClick: () => router.push(`/manage/product/${id}/edit`) },
+          { label: 'Hapus', destructive: true, onClick: () => handleDelete(id, idProduct) },
+        ]}
+      />
+    );
   };
 
   const fetchProducts = async () => {
@@ -292,7 +334,23 @@ export default function DashboardPage() {
                     <td className="px-5 py-3 text-sm text-gray-700">{p.cabang?.name}</td>
                     <td className="px-5 py-3 text-sm text-gray-700">{p.harga.toLocaleString('id-ID')}</td>
                     <td className="px-5 py-3 text-sm text-gray-700">{p.hargaModal.toLocaleString('id-ID')}</td>
-                    <td className="px-5 py-3 text-right text-sm text-gray-500">…</td>
+                    <td className="px-5 py-3 text-right">
+                      <div className="relative inline-block">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            const next = openActionId === p._id ? null : p._id;
+                            setOpenActionId(next);
+                            setMenuAnchor(next ? (e.currentTarget as HTMLElement) : null);
+                          }}
+                          className="rounded-lg px-2 py-1 text-gray-600 hover:bg-gray-100"
+                          aria-label="Row actions"
+                        >
+                          <span className="text-lg leading-none">…</span>
+                        </button>
+                        {openActionId === p._id && actionRows(p._id, p.produkId ?? '')}
+                      </div>
+                    </td>
                   </tr>
                 ))
               )}

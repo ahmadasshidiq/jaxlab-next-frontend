@@ -68,8 +68,8 @@ export default function Page() {
     try {
       const user = JSON.parse(localStorage.getItem("user") ?? "{}");
 
-      const result = await fetch("/api/stock", {
-        method: "POST",
+      const result = await fetch(`/api/stock/${id}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
@@ -84,6 +84,7 @@ export default function Page() {
           cabangId,
           produkKategoriId,
           produkMerkId,
+          produkId: draft.produkId,
           image,
         }),
       });
@@ -101,7 +102,7 @@ export default function Page() {
 
       if (!result.ok) throw new Error("Failed to save product data.");
 
-      toast.success("Stock product successfully added.");
+      toast.success("Stock product successfully updated.");
       router.push("/manage/product");
     } catch (err) {
       toast.error((err as Error).message);
@@ -239,6 +240,7 @@ export default function Page() {
         cabangId: data.data.cabangId ?? "",
         produkKategoriId: data.data.produkKategoriId ?? "",
         produkMerkId: data.data.produkMerkId ?? "",
+        produkId: data.data.produkId ?? "",
         imageDataUrl: data.data.image ?? "",
       });
     

@@ -174,24 +174,6 @@ export default function Page() {
             {r.jumlahTransaksi.toLocaleString("id")}
           </td>
         )}
-        <td className="px-5 py-3 text-right">
-          <div className="relative inline-block">
-            <button
-              type="button"
-              onClick={(e) => {
-                const next = !openAction;
-                setOpenAction(next);
-                setMenuAnchor(next ? (e.currentTarget as HTMLElement) : null);
-              }}
-              className="rounded-lg px-2 py-1 text-gray-600 hover:bg-gray-100"
-              aria-label="Row actions"
-            >
-              <span className="text-lg leading-none">…</span>
-            </button>
-
-            {openAction && actionRows(r._id)}
-          </div>
-        </td>
       </tr>
     ));
   };
