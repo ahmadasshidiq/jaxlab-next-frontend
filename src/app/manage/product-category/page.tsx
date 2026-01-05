@@ -3,6 +3,7 @@
 import AppShell from "@/components/AppShell";
 import SidebarTrigger from "@/components/SidebarTrigger";
 import TableSkeleton from "@/components/TableSkeleton";
+import ActionMenu from "@/components/ActionMenu";
 import { includesText, cn, exportToExcel } from "@/utils/helper";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -25,6 +26,7 @@ export default function Page() {
   const [openImport, setOpenImport] = useState(false);
   const [importFile, setImportFile] = useState<File | null>(null);
   const [isImporting, setIsImporting] = useState(false);
+  const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
   const [columns, setColumns] = useState<Record<string, any>>({
     name: { label: "Nama Kategori", visible: true },
     code: { label: "Kode Kategori", visible: true },
@@ -41,25 +43,17 @@ export default function Page() {
 
   const actionRows = (id: string) => {
     return (
-      <div className="absolute right-0 z-20 mt-2 w-52 rounded-xl border border-gray-200 bg-white p-1 shadow-lg">
-        <button
-          type="button"
-          onClick={() => router.push(`/manage/product-category/${id}/edit`)}
-          className={cn(
-            "w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-50"
-          )}
-        >
-          Edit
-        </button>
-        <div className="my-1 h-px bg-gray-100" />
-        <button
-          type="button"
-          onClick={() => handleDelete(id)}
-          className="w-full rounded-lg px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
-        >
-          Hapus
-        </button>
-      </div>
+      <ActionMenu
+        anchorEl={menuAnchor}
+        onClose={() => {
+          setOpenActionId(null);
+          setMenuAnchor(null);
+        }}
+        items={[
+          { label: "Edit", onClick: () => router.push(`/manage/product-category/${id}/edit`) },
+          { label: "Hapus", destructive: true, onClick: () => handleDelete(id) },
+        ]}
+      />
     );
   };
 
@@ -155,7 +149,11 @@ export default function Page() {
           <div className="relative inline-block">
             <button
               type="button"
-              onClick={() => setOpenActionId(openActionId === r._id ? null : r._id)}
+              onClick={(e) => {
+                const next = openActionId === r._id ? null : r._id;
+                setOpenActionId(next);
+                setMenuAnchor(next ? (e.currentTarget as HTMLElement) : null);
+              }}
               className="rounded-lg px-2 py-1 text-gray-600 hover:bg-gray-100"
               aria-label="Row actions"
             >

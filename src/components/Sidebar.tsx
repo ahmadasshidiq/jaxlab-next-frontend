@@ -124,7 +124,7 @@ export default function Sidebar() {
   return (
     <aside
       className={cn(
-        "fixed left-0 top-0 z-40 flex h-screen flex-col border-r border-jax-line bg-white transition-all duration-300",
+        "fixed left-0 top-0 z-40 flex h-screen flex-col border-r border-jax-line bg-white transition-all duration-500 ease-in-out",
         open ? "w-72" : "w-20"
       )}
     >

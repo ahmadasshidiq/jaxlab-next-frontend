@@ -38,7 +38,20 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const body = await req.json();
-    const { idOwner, name, code } = body;
+    const {
+      idOwner,
+      name,
+      code,
+      qty,
+      harga,
+      hargaModal,
+      satuan,
+      cabangId,
+      produkKategoriId,
+      produkMerkId,
+      produkId,
+      image,
+    } = body;
 
     if (!idOwner || !name || !code)
       return NextResponse.json(
@@ -49,7 +62,7 @@ export async function PUT(
     const id = params.slug;
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-    const response = await fetch(`${baseUrl}/stock-cabang/${id}`, {
+    const response = await fetch(`${baseUrl}/stok-cabang/${id}`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -59,6 +72,15 @@ export async function PUT(
         userId: idOwner,
         name,
         code,
+        qty,
+        harga,
+        hargaModal,
+        satuan,
+        cabangId,
+        produkKategoriId,
+        produkMerkId,
+        produkId,
+        image,
       }),
     });
 
@@ -67,7 +89,7 @@ export async function PUT(
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to update product category" },
+      { error: "Failed to update stock product" },
       { status: 500 }
     );
   }

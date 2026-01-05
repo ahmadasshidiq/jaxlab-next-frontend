@@ -7,6 +7,7 @@ import { Branch } from "../manage/branch/page";
 import { useEffect, useMemo, useState } from "react";
 import { includesText, cn, rolePillClass, exportToExcel } from "@/utils/helper";
 import TableSkeleton from "@/components/TableSkeleton";
+import ActionMenu from "@/components/ActionMenu";
 import { toast } from "sonner";
 
 export type Report = {
@@ -33,6 +34,7 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
   const [openColumns, setOpenColumns] = useState(false);
   const [openAction, setOpenAction] = useState(false);
+  const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
   const [columns, setColumns] = useState<Record<string, any>>({
     namaCabang: { label: "Transaksi pada", visible: true },
     noInvoice: { label: "No Invoice", visible: true },
@@ -55,25 +57,17 @@ export default function Page() {
 
   const actionRows = (id: string) => {
     return (
-      <div className="absolute right-0 z-20 mt-2 w-52 rounded-xl border border-gray-200 bg-white p-1 shadow-lg">
-        <button
-          type="button"
-          onClick={() => {}}
-          className={cn(
-            "w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-50"
-          )}
-        >
-          Edit
-        </button>
-        <div className="my-1 h-px bg-gray-100" />
-        <button
-          type="button"
-          onClick={() => {}}
-          className="w-full rounded-lg px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
-        >
-          Hapus
-        </button>
-      </div>
+      <ActionMenu
+        anchorEl={menuAnchor}
+        onClose={() => {
+          setOpenAction(false);
+          setMenuAnchor(null);
+        }}
+        items={[
+          { label: "Edit", onClick: () => {} },
+          { label: "Hapus", destructive: true, onClick: () => {} },
+        ]}
+      />
     );
   };
 
@@ -184,7 +178,11 @@ export default function Page() {
           <div className="relative inline-block">
             <button
               type="button"
-              onClick={() => setOpenAction(true)}
+              onClick={(e) => {
+                const next = !openAction;
+                setOpenAction(next);
+                setMenuAnchor(next ? (e.currentTarget as HTMLElement) : null);
+              }}
               className="rounded-lg px-2 py-1 text-gray-600 hover:bg-gray-100"
               aria-label="Row actions"
             >
