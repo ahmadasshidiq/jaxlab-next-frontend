@@ -436,7 +436,6 @@ export default function Page() {
         </button>
         <button
           onClick={handleExport}
-          onClick={handleExport}
           className="inline-flex items-center gap-2 rounded-lg bg-jax-lime px-3 py-2 text-sm font-medium text-white hover:bg-jax-limeDark transition"
         >
           <svg

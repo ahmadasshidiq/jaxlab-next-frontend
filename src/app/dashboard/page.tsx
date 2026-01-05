@@ -81,7 +81,6 @@ export default function DashboardPage() {
           setOpenActionId(null);
           setMenuAnchor(null);
         }}
-        shadowClass="shadow-sm"
         items={[
           { label: 'Edit', onClick: () => router.push(`/manage/product/${id}/edit`) },
           { label: 'Hapus', destructive: true, onClick: () => handleDelete(id, idProduct) },
